@@ -1,0 +1,24 @@
+language: generic
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t krstncreyes/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true krstncreyes/react-test npm test
+
+#Create production base images
+after_success:
+  - docker build -t krstncreyes/multi-client ./client
+  - docker build -t krstncreyes/multi-nginx ./nginx
+  - docker build -t krstncreyes/multi-server ./server
+  - docker build -t krstncreyes/multi-worker ./worker
+  # Login to Docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take images and push to Docker hub
+  - docker push krstncreyes/multi-client
+  - docker push krstncreyes/multi-nginx
+  - docker push krstncreyes/multi-server
+  - docker push krstncreyes/multi-worker
