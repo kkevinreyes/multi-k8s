@@ -4,8 +4,9 @@ COPY ./package.json ./
 RUN npm install
 RUN npm install web-vitals
 COPY . .
-RUN npm run build
+RUN npm run build   
 
+#output will be a folder named build
 FROM nginx
 EXPOSE 3000
 COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
